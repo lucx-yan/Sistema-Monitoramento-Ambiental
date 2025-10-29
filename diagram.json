@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-breadboard", "id": "bb1", "top": 227.4, "left": -160.4, "attrs": {} },
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 509.4, "left": 37.8, "attrs": {} },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": 96.3,
+      "left": 13.8,
+      "attrs": { "humidity": "43", "temperature": "58.6" }
+    },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd1",
+      "top": 217.6,
+      "left": 447.2,
+      "attrs": { "pins": "i2c" }
+    },
+    { "type": "wokwi-ds1307", "id": "rtc1", "top": 570.6, "left": -105.5, "attrs": {} },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr1",
+      "top": 444.8,
+      "left": 250.4,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 349.85,
+      "left": -87.8,
+      "rotate": 180,
+      "attrs": { "value": "1000" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r3",
+      "top": 349.85,
+      "left": -1.4,
+      "rotate": 180,
+      "attrs": { "value": "1000" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r4",
+      "top": 349.85,
+      "left": 85,
+      "rotate": 180,
+      "attrs": { "value": "1000" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": 303.6,
+      "left": -111.4,
+      "attrs": { "color": "limegreen" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led2",
+      "top": 303.6,
+      "left": -25,
+      "attrs": { "color": "yellow" }
+    },
+    { "type": "wokwi-led", "id": "led3", "top": 303.6, "left": 61.4, "attrs": { "color": "red" } },
+    {
+      "type": "wokwi-buzzer",
+      "id": "bz1",
+      "top": 616.8,
+      "left": 337.8,
+      "attrs": { "volume": "0.1" }
+    }
+  ],
+  "connections": [
+    [ "uno:GND.2", "bb1:bn.1", "black", [ "v19.1", "h-360.9", "v-297.6" ] ],
+    [ "bz1:1", "uno:GND.3", "black", [ "h-48", "v-124.7" ] ],
+    [ "bz1:2", "uno:13", "purple", [ "v9.6", "h-106.4" ] ],
+    [ "uno:5V", "bb1:bp.1", "red", [ "v38.3", "h-370.6", "v-326.4" ] ],
+    [ "bb1:bp.25", "bb1:bp.26", "red", [ "v0" ] ],
+    [ "bb1:bn.25", "bb1:bn.26", "black", [ "v0" ] ],
+    [ "ldr1:VCC", "bb1:bp.50", "red", [ "h9.6", "v-67.2" ] ],
+    [ "ldr1:GND", "bb1:bn.50", "black", [ "h0" ] ],
+    [ "ldr1:AO", "uno:A0", "blue", [ "h0", "v239.3", "h-172.8" ] ],
+    [ "rtc1:5V", "bb1:bp.4", "red", [ "h0" ] ],
+    [ "lcd1:SCL", "uno:A5", "cyan", [ "h0" ] ],
+    [ "lcd1:SDA", "uno:A4", "cyan", [ "h0" ] ],
+    [ "dht1:VCC", "bb1:tp.14", "red", [ "v0" ] ],
+    [ "dht1:SDA", "uno:2", "orange", [ "v0" ] ],
+    [ "dht1:GND", "bb1:tn.16", "black", [ "v0" ] ],
+    [ "bb1:tn.25", "bb1:tn.26", "black", [ "v0" ] ],
+    [ "uno:6", "bb1:30b.h", "green", [ "v-38.4", "h-92.3" ] ],
+    [ "bb1:23b.g", "bb1:bn.18", "black", [ "v0" ] ],
+    [ "uno:7", "bb1:21b.h", "green", [ "v-28.8", "h-169.2", "v-124.8" ] ],
+    [ "bb1:14b.g", "bb1:bn.11", "black", [ "v0" ] ],
+    [ "uno:8", "bb1:12b.h", "green", [ "v-19.2", "h-239.6" ] ],
+    [ "bb1:bn.4", "rtc1:GND", "black", [ "v0" ] ],
+    [ "bb1:5b.g", "bb1:bn.3", "black", [ "v0" ] ],
+    [ "bb1:bn.2", "bb1:tn.1", "black", [ "v-20.5", "h-48.8", "v-153.5" ] ],
+    [ "bb1:bp.2", "bb1:tp.1", "red", [ "v-20.1", "h-58.4", "v-153.9" ] ],
+    [ "lcd1:GND", "bb1:tn.27", "black", [ "h0" ] ],
+    [ "r2:1", "bb1:12b.g", "", [ "$bb" ] ],
+    [ "r2:2", "bb1:6b.g", "", [ "$bb" ] ],
+    [ "r3:1", "bb1:21b.g", "", [ "$bb" ] ],
+    [ "r3:2", "bb1:15b.g", "", [ "$bb" ] ],
+    [ "r4:1", "bb1:30b.g", "", [ "$bb" ] ],
+    [ "r4:2", "bb1:24b.g", "", [ "$bb" ] ],
+    [ "led1:A", "bb1:6b.f", "", [ "$bb" ] ],
+    [ "led1:C", "bb1:5b.f", "", [ "$bb" ] ],
+    [ "led2:A", "bb1:15b.f", "", [ "$bb" ] ],
+    [ "led2:C", "bb1:14b.f", "", [ "$bb" ] ],
+    [ "led3:A", "bb1:24b.f", "", [ "$bb" ] ],
+    [ "led3:C", "bb1:23b.f", "", [ "$bb" ] ],
+    [ "bb1:tp.25", "bb1:tp.26", "red", [ "v0" ] ],
+    [ "rtc1:SCL", "uno:A5.2", "gray", [ "h0" ] ],
+    [ "rtc1:SDA", "uno:A4.2", "gray", [ "h0" ] ],
+    [ "lcd1:SCL", "bb1:62t.a", "", [ "$bb" ] ],
+    [ "lcd1:VCC", "bb1:tp.46", "red", [ "h0" ] ]
+  ],
+  "dependencies": {}
+}
