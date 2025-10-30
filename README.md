@@ -96,6 +96,8 @@ Este projeto expande o sistema anterior de monitoramento de luminosidade, adicio
 
 *Serial monitor iniciado*
 
+---
+
 ![Serial Monitor Salvando](imgs/serialMonitor.png)
 
 *Serial monitor salvando na EEPROM*
