@@ -65,35 +65,40 @@ Este projeto expande o sistema anterior de monitoramento de luminosidade, adicio
   - `EEPROM.h` - Armazenamento de dados
 
 ## 📸 Visualização do Projeto
-## Circuito no Wokwi
 
-<img src="imgs/circuitoCompleto.png" alt="Circuito" width="400">
-<br>
-Vista geral do circuito montado no Wokwi
+### Circuito no Wokwi
 
-## Sistema em Funcionamento
+![Circuito Completo](imgs/circuitoCompleto.png)
 
-<img src="imgs/estadoOk.png" alt="Circuito" width="400">
-<br>
-Sistema em estado OK - Todos os parâmetros dentro dos limites ideais
-<hr>
-<img src="imgs/estadoAlerta.png" alt="Circuito" width="400">
-<br>
-Sistema em estado de alerta - Parâmetros próximos aos limites críticos (LED amarelo + buzzer)
-<hr>
-<img src="imgs/estadoCritico.png" alt="Circuito" width="400">
-<br>
-Sistema em estado crítico - Parâmetros muito fora dos limites (LED vermelho + buzzer)
+*Vista geral do circuito montado no Wokwi*
 
-## Serial Monitor
+### Sistema em Funcionamento
 
-<img src="imgs/monitorIniciado.png" alt="Serial Monitor" width="400">
-<br>
-Serial monitor iniciado
+![Estado OK](imgs/estadoOk.png)
 
-<img src="imgs/serialMonitor.png" alt="Serial Monitor" width="400">
-<br>
-Serial monitor salvando na EEPROM
+*Sistema em estado OK - Todos os parâmetros dentro dos limites ideais*
+
+---
+
+![Estado Alerta](imgs/estadoAlerta.png)
+
+*Sistema em estado de alerta - Parâmetros próximos aos limites críticos (LED amarelo + buzzer)*
+
+---
+
+![Estado Crítico](imgs/estadoCritico.png)
+
+*Sistema em estado crítico - Parâmetros muito fora dos limites (LED vermelho + buzzer)*
+
+### Serial Monitor
+
+![Monitor Iniciado](imgs/monitorIniciado.png)
+
+*Serial monitor iniciado*
+
+![Serial Monitor Salvando](imgs/serialMonitor.png)
+
+*Serial monitor salvando na EEPROM*
 
 ## 📐 Diagrama de Conexões
 
