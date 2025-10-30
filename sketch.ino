@@ -29,6 +29,14 @@ const int ledVerde = 8;
 const int ledAmarelo = 7;
 const int ledVermelho = 6;
 const int buzzer = 13;
+const int buttonPin = 12;
+
+// Variáveis para controlar unidade de temperatura
+bool usarFahrenheit = false;  // false = Celsius, true = Fahrenheit
+bool lastButtonState = LOW;  // Estado anterior do botão
+bool currentButtonState = LOW;  // Estado atual do botão
+unsigned long lastDebounceTime = 0;  // Tempo do último debounce
+const unsigned long debounceDelay = 50;  // Delay para debounce (50ms)
 
 // Configurações da EEPROM para data logger
 const int maxRecords = 100;
@@ -63,257 +71,255 @@ int luminosidade = 0;
 
 // Caracteres customizados para o LCD
 // Caracteres de inicialização
-byte uva[8] = {
+byte uva[8] = {  // Logo - Uva
+  B01110, 
+  B11111, 
+  B11111, 
   B01110,
-  B11111,
-  B11111,
-  B01110,
-  B11111,
-  B11111,
-  B11111,
+  B11111, 
+  B11111, 
+  B11111, 
   B01110
 };
 
-byte folha[8] = {
-  B00100,
-  B01110,
+byte folha[8] = {  // Logo - Folha
+  B00100, 
+  B01110, 
+  B11111, 
   B11111,
-  B11111,
-  B01110,
-  B00100,
-  B00100,
+  B01110, 
+  B00100, 
+  B00100, 
   B00000
 };
 
 // Ícones de temperatura (3 níveis)
 byte termoBaixo[8] = {  // Temperatura baixa - termômetro vazio
-  B00100,
+  B00100, 
+  B01010, 
+  B01010, 
   B01010,
-  B01010,
-  B01010,
-  B01010,
-  B10001,
-  B10001,
+  B01010, 
+  B10001, 
+  B10001, 
   B01110
 };
 
 byte termoMedio[8] = {  // Temperatura média - termômetro meio cheio
-  B00100,
-  B01010,
-  B01010,
+  B00100, 
+  B01010, 
+  B01010, 
   B01110,
-  B01110,
-  B11111,
-  B11111,
+  B01110, 
+  B11111, 
+  B11111, 
   B01110
 };
 
-byte termoAlto[8] = {   // Temperatura alta - termômetro cheio
-  B00100,
+byte termoAlto[8] = {  // Temperatura alta - termômetro cheio
+  B00100, 
+  B01110, 
+  B01110, 
   B01110,
-  B01110,
-  B01110,
-  B01110,
-  B11111,
-  B11111,
+  B01110, 
+  B11111, 
+  B11111, 
   B01110
 };
 
 // Ícones de umidade (3 níveis)
-byte gotaBaixa[8] = {   // Umidade baixa - gota vazia
-  B00100,
-  B00100,
+byte gotaBaixa[8] = {  // Umidade baixa - gota vazia
+  B00100, 
+  B00100, 
+  B01010, 
   B01010,
-  B01010,
-  B10001,
-  B10001,
-  B10001,
+  B10001, 
+  B10001, 
+  B10001, 
   B01110
 };
 
-byte gotaMedia[8] = {   // Umidade média - gota meio cheia
-  B00100,
-  B00100,
+byte gotaMedia[8] = {  // Umidade média - gota meio cheia
+  B00100, 
+  B00100, 
+  B01010, 
   B01010,
-  B01010,
-  B10001,
-  B11111,
-  B11111,
+  B10001, 
+  B11111, 
+  B11111, 
   B01110
 };
 
-byte gotaCheia[8] = {   // Umidade alta - gota cheia
-  B00100,
-  B00100,
+byte gotaCheia[8] = {  // Umidade alta - gota cheia
+  B00100, 
+  B00100, 
+  B01110, 
   B01110,
-  B01110,
-  B11111,
-  B11111,
-  B11111,
+  B11111, 
+  B11111, 
+  B11111, 
   B01110
 };
 
 // Ícones de luminosidade (3 níveis)
 byte lampadaApagada[8] = {  // Luminosidade baixa - lâmpada apagada
-  B01110,
+  B01110, 
+  B10001, 
+  B10001, 
   B10001,
-  B10001,
-  B10001,
-  B01110,
-  B01110,
-  B00100,
+  B01110, 
+  B01110, 
+  B00100, 
   B00100
 };
 
-byte lampadaMeia[8] = {     // Luminosidade média - lâmpada meia
-  B01110,
-  B10001,
+byte lampadaMeia[8] = {  // Luminosidade média - lâmpada meia
+  B01110, 
+  B10001, 
+  B10101, 
   B10101,
-  B10101,
-  B01110,
-  B01110,
-  B00100,
+  B01110, 
+  B01110, 
+  B00100, 
   B00100
 };
 
-byte lampadaAcesa[8] = {    // Luminosidade alta - lâmpada acesa
+byte lampadaAcesa[8] = {  // Luminosidade alta - lâmpada acesa
   B01110,
   B11111,
+  B11111, 
   B11111,
-  B11111,
-  B01110,
-  B01110,
-  B00100,
+  B01110, 
+  B01110, 
+  B00100, 
   B00100
 };
 
 // Emojis para os estados
 byte emojiFeliz[8] = {  // Estado OK
+  B00000, 
+  B01010, 
+  B01010, 
   B00000,
-  B01010,
-  B01010,
-  B00000,
-  B10001,
-  B10001,
-  B01110,
+  B10001, 
+  B10001, 
+  B01110, 
   B00000
 };
 
 byte emojiSerio[8] = {  // Estado Alerta
+  B00000, 
+  B01010, 
+  B01010, 
   B00000,
-  B01010,
-  B01010,
-  B00000,
-  B00000,
-  B11111,
-  B00000,
+  B00000, 
+  B11111, 
+  B00000, 
   B00000
 };
 
 byte emojiTriste[8] = {  // Estado Crítico
+  B00000, 
+  B01010, 
+  B01010, 
   B00000,
-  B01010,
-  B01010,
-  B00000,
-  B01110,
-  B10001,
-  B10001,
+  B01110, 
+  B10001, 
+  B10001, 
   B00000
 };
 
-void setup() {
-  // Inicializa pinos e define o seu tipo
-  pinMode(ledVerde, OUTPUT);
-  pinMode(ledAmarelo, OUTPUT);
-  pinMode(ledVermelho, OUTPUT);
-  pinMode(buzzer, OUTPUT);
-  pinMode(pinoLDR, INPUT);
-  pinMode(LED_BUILTIN, OUTPUT);
-  
-  // Inicializa Serial
-  Serial.begin(9600);
-  
-  // Inicializa DHT22
-  dht.begin();
-  
-  // Inicializa RTC
-  rtc.begin();
-  
-  // Ajusta RTC apenas na primeira vez (comentar depois)
-  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-  
-  // Inicializa LCD I2C
-  lcd.init();
-  lcd.backlight();
-  
-  // Cria caracteres customizados com logo da empresa
-  lcd.createChar(0, uva);
-  lcd.createChar(1, folha);
-  
-  // Tela de boas-vindas com animação gráfica
-  telaBoasVindas();
-  
-  // Inicializa array de leituras do LDR
-  for (int i = 0; i < numLeituras; i++) {
-    leituras[i] = 0;
-  }
-  
-  // Lê logs da EEPROM se LOG_OPTION estiver ativado
-  if (LOG_OPTION) {
-    get_log();
-  }
-  
-  Serial.println("Sistema iniciado!");
-  Serial.println("Timestamp\t\tTemp\tUmid\tLuz\tStatus");
+
+// Converte temperatura de Celsius para Fahrenheit
+// Usa a fórmula para transformar: °F = (°C × 9/5) + 32
+float celsiusParaFahrenheit(float celsius) {
+  return (celsius * 9.0 / 5.0) + 32.0;
 }
 
-void loop() {
-  // Obtém timestamp
-  DateTime now = rtc.now();
-  int offsetSeconds = UTC_OFFSET * 3600;
-  DateTime adjustedTime = DateTime(now.unixtime() + offsetSeconds);
-  
-  // Lê todos os sensores
-  lerSensores();
-  
-  // Exibe dados no LCD
-  exibirNoLCD();
-  
-  // Exibe dados no Serial com timestamp
-  if (SERIAL_OPTION) {
-    exibirNoSerial(adjustedTime);
-  }
-  
-  // Verifica condições e aciona alertas
-  verificarCondicoes();
-  
-  // Controla buzzer
-  controlarBuzzer();
-  
-  // Data logger: registra na EEPROM uma vez a cada 30 segundos se estiver em ALERTA ou CRÍTICO
-  if (millis() - ultimoRegistroEEPROM >= 30000) {  // 30 segundos = 30000 milissegundos
-    if (isAmbienteAlerta() || isAmbienteCritico()) {
-      salvarNaEEPROM(adjustedTime);
-      Serial.println(" --> REGISTRADO NA EEPROM");
-      ultimoRegistroEEPROM = millis();  // Atualiza o tempo do último registro
-    }
-  }
-  
-  delay(2000); // Atualiza a cada 2 segundos
+// Apaga todos os LEDs de status
+void apagarTodosLEDs() {
+  digitalWrite(ledVerde, LOW);
+  digitalWrite(ledAmarelo, LOW);
+  digitalWrite(ledVermelho, LOW);
 }
 
+// Ativa o buzzer para alerta
+void ativarBuzzer() {
+  if (!buzzerAtivo) {
+    buzzerAtivo = true;
+    tempoInicioBuzzer = millis();
+    digitalWrite(buzzer, HIGH);
+  }
+}
+
+// Controla o tempo do buzzer (desliga após 3 segundos)
+void controlarBuzzer() {
+  // Desliga buzzer após 3 segundos
+  if (buzzerAtivo && (millis() - tempoInicioBuzzer >= 3000)) {
+    digitalWrite(buzzer, LOW);
+    buzzerAtivo = false;
+  }
+}
+
+// Verifica se o ambiente está dentro dos parâmetros ideais
+bool isAmbienteOK() {
+  return (temperatura >= trigger_t_min && temperatura <= trigger_t_max &&
+          umidade >= trigger_u_min && umidade <= trigger_u_max &&
+          luminosidade <= trigger_l_max);
+}
+
+// Verifica se o ambiente está em estado de alerta (próximo dos limites)
+bool isAmbienteAlerta() {
+  // Alerta se está próximo dos limites críticos
+  bool tempAlerta = (temperatura < trigger_t_min || temperatura > trigger_t_max) &&
+                    (temperatura >= trigger_t_min - 3 && temperatura <= trigger_t_max + 3);
+  bool umidAlerta = (umidade < trigger_u_min || umidade > trigger_u_max) &&
+                    (umidade >= trigger_u_min - 10 && umidade <= trigger_u_max + 10);
+  bool lumAlerta = (luminosidade > trigger_l_max && luminosidade <= 65);
+  
+  return (tempAlerta || umidAlerta || lumAlerta) && !isAmbienteCritico();
+}
+
+// Verifica se o ambiente está em estado crítico (muito fora dos limites)
+bool isAmbienteCritico() {
+  // Crítico se está muito fora dos limites
+  bool tempCritica = (temperatura < trigger_t_min - 3 || temperatura > trigger_t_max + 3);
+  bool umidCritica = (umidade < trigger_u_min - 10 || umidade > trigger_u_max + 10);
+  bool lumCritica = (luminosidade > 65);
+  
+  return (tempCritica || umidCritica || lumCritica);
+}
+
+// Verifica as condições do ambiente e aciona os alertas apropriados
+void verificarCondicoes() {
+  apagarTodosLEDs();
+  
+  if (isAmbienteOK()) {
+    // Ambiente OK - LED verde
+    digitalWrite(ledVerde, HIGH);
+  } else if (isAmbienteAlerta()) {
+    // Alerta - LED amarelo + buzzer
+    digitalWrite(ledAmarelo, HIGH);
+    ativarBuzzer();
+  } else if (isAmbienteCritico()) {
+    // Crítico - LED vermelho + buzzer
+    digitalWrite(ledVermelho, HIGH);
+    ativarBuzzer();
+  }
+}
+
+// Exibe tela de boas-vindas com animação
 void telaBoasVindas() {
-  // Tela 1: Logo da empresa com animação
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.write(byte(1)); // Folha
+  lcd.write(byte(1));  // Folha
   lcd.print(" Vinharia  ");
-  lcd.write(byte(1)); // Folha
+  lcd.write(byte(1));  // Folha
   
   lcd.setCursor(0, 1);
-  lcd.write(byte(0)); // Uva
+  lcd.write(byte(0));  // Uva
   lcd.print("  Agnello  ");
-  lcd.write(byte(0)); // Uva
+  lcd.write(byte(0));  // Uva
   
   delay(3000);
   
@@ -324,7 +330,7 @@ void telaBoasVindas() {
   
   for (int i = 0; i < 16; i++) {
     lcd.setCursor(i, 1);
-    lcd.write(byte(0xFF)); // Bloco cheio
+    lcd.write(byte(0xFF));  // Bloco cheio
     delay(100);
   }
   
@@ -332,6 +338,7 @@ void telaBoasVindas() {
   lcd.clear();
 }
 
+// Lê todos os sensores (temperatura, umidade e luminosidade)
 void lerSensores() {
   // Lê temperatura e umidade do DHT22
   temperatura = dht.readTemperature();
@@ -357,6 +364,38 @@ void lerSensores() {
   luminosidade = map(media, 0, 1023, 0, 100);
 }
 
+// Lê o botão de alternância de unidade de temperatura com debounce
+void lerBotao() {
+  int reading = digitalRead(buttonPin);
+  
+  // Se o estado mudou, reinicia o timer de debounce
+  if (reading != lastButtonState) {
+    lastDebounceTime = millis();
+  }
+  
+  // Se passou o tempo de debounce, considera a leitura válida
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    if (reading != currentButtonState) {
+      currentButtonState = reading;
+      
+      // Se o botão foi pressionado (HIGH)
+      if (currentButtonState == HIGH) {
+        // Alterna entre Celsius e Fahrenheit
+        usarFahrenheit = !usarFahrenheit;
+        
+        // Feedback no Serial
+        if (SERIAL_OPTION) {
+          Serial.print("\n>>> Unidade alterada para: ");
+          Serial.println(usarFahrenheit ? "FAHRENHEIT" : "CELSIUS");
+        }
+      }
+    }
+  }
+  
+  lastButtonState = reading;
+}
+
+// Exibe os dados no display LCD com ícones
 void exibirNoLCD() {
   // Cria ícones dinâmicos baseados nos valores
   
@@ -401,18 +440,24 @@ void exibirNoLCD() {
   // Primeira linha do display: Temperatura, Umidade e Luminosidade
   lcd.setCursor(0, 0);
   
-  // Temperatura
-  lcd.write(byte(2)); // Termômetro
-  lcd.print(temperatura, 1); // 1 casa decimal
-  lcd.print("C ");
+  // Temperatura (pode exibir em Celsius ou Fahrenheit)
+  lcd.write(byte(2));  // Termômetro
+  if (usarFahrenheit) {
+    float tempF = celsiusParaFahrenheit(temperatura);
+    lcd.print(tempF, 1);  // 1 casa decimal
+    lcd.print("F ");
+  } else {
+    lcd.print(temperatura, 1);  // 1 casa decimal
+    lcd.print("C ");
+  }
   
   // Umidade
-  lcd.write(byte(3)); // Gota
-  lcd.print(umidade, 0); // Sem decimal
+  lcd.write(byte(3));  // Gota
+  lcd.print(umidade, 0);  // Sem decimal
   lcd.print("% ");
   
   // Luminosidade
-  lcd.write(byte(4)); // Lâmpada
+  lcd.write(byte(4));  // Lâmpada
   lcd.print(luminosidade);
   lcd.print("%");
   
@@ -420,17 +465,18 @@ void exibirNoLCD() {
   lcd.setCursor(0, 1);
   
   if (isAmbienteOK()) {
-    lcd.write(byte(5)); // Emoji feliz
+    lcd.write(byte(5));  // Emoji feliz
     lcd.print(" Tudo Certo!");
   } else if (isAmbienteAlerta()) {
-    lcd.write(byte(5)); // Emoji sério
+    lcd.write(byte(5));  // Emoji sério
     lcd.print(" Atencao!");
   } else {
-    lcd.write(byte(5)); // Emoji triste
+    lcd.write(byte(5));  // Emoji triste
     lcd.print(" Critico!");
   }
 }
 
+// Exibe os dados no Serial Monitor com timestamp formatado
 void exibirNoSerial(DateTime ajustado) {
   // Timestamp formatado
   Serial.print(ajustado.year());
@@ -452,10 +498,17 @@ void exibirNoSerial(DateTime ajustado) {
   Serial.print(ajustado.second());
   Serial.print("\t");
   
-  // Temperatura com espaçamento fixo
-  if (temperatura < 10) Serial.print(" ");  // Adiciona espaço se menor que 10
-  Serial.print(temperatura, 1);
-  Serial.print("C\t");
+  // Temperatura com espaçamento fixo (em Celsius ou Fahrenheit)
+  if (usarFahrenheit) {
+    float tempF = celsiusParaFahrenheit(temperatura);
+    if (tempF < 10) Serial.print(" ");  // Adiciona espaço se menor que 10
+    Serial.print(tempF, 1);
+    Serial.print("F\t");
+  } else {
+    if (temperatura < 10) Serial.print(" ");  // Adiciona espaço se menor que 10
+    Serial.print(temperatura, 1);
+    Serial.print("C\t");
+  }
   
   // Umidade com espaçamento fixo
   if (umidade < 10) Serial.print(" ");  // Adiciona espaço se menor que 10
@@ -477,73 +530,15 @@ void exibirNoSerial(DateTime ajustado) {
   }
 }
 
-bool isAmbienteOK() {
-  return (temperatura >= trigger_t_min && temperatura <= trigger_t_max &&
-          umidade >= trigger_u_min && umidade <= trigger_u_max &&
-          luminosidade <= trigger_l_max);
-}
-
-bool isAmbienteAlerta() {
-  // Alerta se está próximo dos limites críticos
-  bool tempAlerta = (temperatura < trigger_t_min || temperatura > trigger_t_max) &&
-                    (temperatura >= trigger_t_min - 3 && temperatura <= trigger_t_max + 3);
-  bool umidAlerta = (umidade < trigger_u_min || umidade > trigger_u_max) &&
-                    (umidade >= trigger_u_min - 10 && umidade <= trigger_u_max + 10);
-  bool lumAlerta = (luminosidade > trigger_l_max && luminosidade <= 65);
-  
-  return (tempAlerta || umidAlerta || lumAlerta) && !isAmbienteCritico();
-}
-
-bool isAmbienteCritico() {
-  // Crítico se está muito fora dos limites
-  bool tempCritica = (temperatura < trigger_t_min - 3 || temperatura > trigger_t_max + 3);
-  bool umidCritica = (umidade < trigger_u_min - 10 || umidade > trigger_u_max + 10);
-  bool lumCritica = (luminosidade > 65);
-  
-  return (tempCritica || umidCritica || lumCritica);
-}
-
-void verificarCondicoes() {
-  apagarTodosLEDs();
-  
-  if (isAmbienteOK()) {
-    // Ambiente OK - LED verde
-    digitalWrite(ledVerde, HIGH);
-    
-  } else if (isAmbienteAlerta()) {
-    // Alerta - LED amarelo + buzzer
-    digitalWrite(ledAmarelo, HIGH);
-    ativarBuzzer();
-    
-  } else if (isAmbienteCritico()) {
-    // Crítico - LED vermelho + buzzer
-    digitalWrite(ledVermelho, HIGH);
-    ativarBuzzer();
+// Calcula o próximo endereço da EEPROM (buffer circular)
+void getNextAddress() {
+  currentAddress += recordSize;
+  if (currentAddress >= endAddress) {
+    currentAddress = 0;  // Volta ao início (buffer circular)
   }
 }
 
-void ativarBuzzer() {
-  if (!buzzerAtivo) {
-    buzzerAtivo = true;
-    tempoInicioBuzzer = millis();
-    digitalWrite(buzzer, HIGH);
-  }
-}
-
-void controlarBuzzer() {
-  // Desliga buzzer após 3 segundos
-  if (buzzerAtivo && (millis() - tempoInicioBuzzer >= 3000)) {
-    digitalWrite(buzzer, LOW);
-    buzzerAtivo = false;
-  }
-}
-
-void apagarTodosLEDs() {
-  digitalWrite(ledVerde, LOW);
-  digitalWrite(ledAmarelo, LOW);
-  digitalWrite(ledVermelho, LOW);
-}
-
+// Salva os dados na EEPROM
 void salvarNaEEPROM(DateTime timestamp) {
   // Converte valores float para int para economia de espaço
   int tempInt = (int)(temperatura * 100);
@@ -560,13 +555,7 @@ void salvarNaEEPROM(DateTime timestamp) {
   getNextAddress();
 }
 
-void getNextAddress() {
-  currentAddress += recordSize;
-  if (currentAddress >= endAddress) {
-    currentAddress = 0; // Volta ao início (buffer circular)
-  }
-}
-
+// Lê e exibe os logs armazenados na EEPROM
 void get_log() {
   Serial.println("\n=== LOGS ARMAZENADOS NA EEPROM ===");
   Serial.println("Timestamp\t\t\tTemp\tUmid\tLuz");
@@ -602,4 +591,91 @@ void get_log() {
   }
   
   Serial.println("===================================\n");
+}
+
+// ========== FUNÇÕES PRINCIPAIS ==========
+
+void setup() {
+  // Inicializa pinos e define o seu tipo
+  pinMode(ledVerde, OUTPUT);
+  pinMode(ledAmarelo, OUTPUT);
+  pinMode(ledVermelho, OUTPUT);
+  pinMode(buzzer, OUTPUT);
+  pinMode(pinoLDR, INPUT);
+  pinMode(buttonPin, INPUT);  // Botão de alternância de temperatura
+  pinMode(LED_BUILTIN, OUTPUT);
+  
+  // Inicializa Serial
+  Serial.begin(9600);
+  
+  // Inicializa DHT22
+  dht.begin();
+  
+  // Inicializa RTC
+  rtc.begin();
+  
+  // Ajusta RTC apenas na primeira vez (comentar depois)
+  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  
+  // Inicializa LCD I2C
+  lcd.init();
+  lcd.backlight();
+  
+  // Cria caracteres customizados com logo da empresa
+  lcd.createChar(0, uva);
+  lcd.createChar(1, folha);
+  
+  // Tela de boas-vindas com animação gráfica
+  telaBoasVindas();
+  
+  // Inicializa array de leituras do LDR
+  for (int i = 0; i < numLeituras; i++) {
+    leituras[i] = 0;
+  }
+  
+  // Lê logs da EEPROM se LOG_OPTION estiver ativado
+  if (LOG_OPTION) {
+    get_log();
+  }
+  
+  Serial.println("Sistema iniciado!");
+  Serial.println("Timestamp\t\tTemp\tUmid\tLuz\tStatus");
+}
+
+void loop() {
+  // Lê o botão para alternar unidade de temperatura
+  lerBotao();
+  
+  // Obtém timestamp
+  DateTime now = rtc.now();
+  int offsetSeconds = UTC_OFFSET * 3600;
+  DateTime adjustedTime = DateTime(now.unixtime() + offsetSeconds);
+  
+  // Lê todos os sensores
+  lerSensores();
+  
+  // Exibe dados no LCD
+  exibirNoLCD();
+  
+  // Exibe dados no Serial com timestamp
+  if (SERIAL_OPTION) {
+    exibirNoSerial(adjustedTime);
+  }
+  
+  // Verifica condições e aciona alertas
+  verificarCondicoes();
+  
+  // Controla buzzer
+  controlarBuzzer();
+  
+  // Data logger: registra na EEPROM a cada 30 segundos se estiver em ALERTA ou CRÍTICO
+  if (millis() - ultimoRegistroEEPROM >= 30000) {  // 30 segundos = 30000 milissegundos
+    if (isAmbienteAlerta() || isAmbienteCritico()) {
+      salvarNaEEPROM(adjustedTime);
+      Serial.println(" --> REGISTRADO NA EEPROM");
+      ultimoRegistroEEPROM = millis();  // Atualiza o tempo do último registro
+    }
+  }
+  
+  delay(2000);  // Atualiza a cada 2 segundos
 }
