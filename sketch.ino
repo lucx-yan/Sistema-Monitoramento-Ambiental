@@ -355,7 +355,7 @@ void lerSensores() {
   indiceLeitura = (indiceLeitura + 1) % numLeituras;
   
   media = total / numLeituras;
-  luminosidade = map(media, 0, 1023, 0, 100);
+  luminosidade = map(media, 0, 1023, 100, 0);
 }
 
 // Lê o botão de alternância de unidade de temperatura com debounce
